@@ -111,13 +111,13 @@ def select_n_samples_from_same_dataset(samples,nums,n_per_batch,caption_kinds, b
 def generate_human_value(captions,n):
     """Generate a string with image captions for human interaction."""
     #set_trace()
-    caption_strings = [f"Please first understand the these image descriptions I provide examples.\nexamples:"]
+    caption_strings = [f"These are microscopic images of cells or tissues.Please first understand the image descriptions that I will provide as examples.\nexamples:"]
     
     caption_strings += [
         f"<image>Caption#{i+1}:{caption}" for i, caption in enumerate(captions[:-1])
     ]
     if captions:
-        caption_strings.append(f"\nplease try to determine which Caption this new image most closely resembles?<image>Caption{len(captions)}#You must choose your answer from the Choice List.\n Choice List:")
+        caption_strings.append(f"Now, using the examples above, please select the best matching caption for this new image from the Choice List below.\n<image>New Image Caption:\n Choice List:")
     caption_strings += [f"{chr(65 + i)}:{caption}" for i, caption in enumerate(captions[:-1])]
     return "\n".join(caption_strings)
     #return ' '.join(caption_strings)
@@ -197,42 +197,41 @@ def combine_samples_from_same_dataset(samples_dict, n,caption_kinds, sample_coun
             # from pdb import set_trace
             # if caption  in "Stroma":
             #     set_trace()
-            # if process_sample:
-            #     s_samples = [sample for sample in samples if sample['relative_image'] not in s_blacklist]
-            #     s_samples.sort(key=lambda x: x['relative_image'])  # Sort to ensure consistent order
-            #     if len(s_samples) >=2000:
-            #         cutoff_index = max(1, int(len(s_samples) * 0.9))
-            #         last__samples.extend(s_samples[cutoff_index:])
-            #     elif len(s_samples) >=500 and len(s_samples) <2000:
-            #         cutoff_index = max(1, int(len(s_samples) * 0.5))
-            #         last__samples.extend(s_samples[cutoff_index:])
-            #     else :
-            #         last__samples.extend(s_samples)
-            # else :
-                
-            #     if len(samples) >=10000:
-            #         cutoff_index = max(1, int(len(samples) * 0.95))
-            #         last__samples.extend(samples[cutoff_index:])
-            #     elif len(samples) >=5000 and len(samples) <10000:
-            #         cutoff_index = max(1, int(len(samples) * 0.9))
-            #         last__samples.extend(samples[cutoff_index:])
-            #     elif len(samples) >=1000 and len(samples) <5000:
-            #         cutoff_index = max(1, int(len(samples) * 0.8))
-            #         last__samples.extend(samples[cutoff_index:])
-            #     elif len(samples) >=500 and len(samples) <1000:
-            #         cutoff_index = max(1, int(len(samples) * 0.7))
-            #         last__samples.extend(samples[cutoff_index:])
-            #     else:
-            #         cutoff_index = max(1, int(len(samples) * 0.5))
-            #         last__samples.extend(samples[cutoff_index:])
             if process_sample:
                 s_samples = [sample for sample in samples if sample['relative_image'] not in s_blacklist]
                 s_samples.sort(key=lambda x: x['relative_image'])  # Sort to ensure consistent order
-                #cutoff_index = max(1, int(len(s_samples) * 0.5))
-                last__samples.extend(s_samples)
-            else:
-                cutoff_index = max(1, int(len(samples) * 0.5))
-                last__samples.extend(samples[cutoff_index:])
+                if len(s_samples) >=2000:
+                    cutoff_index = max(1, int(len(s_samples) * 0.9))
+                    last__samples.extend(s_samples[cutoff_index:])
+                elif len(s_samples) >=500 and len(s_samples) <2000:
+                    cutoff_index = max(1, int(len(s_samples) * 0.5))
+                    last__samples.extend(s_samples[cutoff_index:])
+                else :
+                    last__samples.extend(s_samples)
+            else :
+                if len(samples) >=10000:
+                    cutoff_index = max(1, int(len(samples) * 0.8))
+                    last__samples.extend(samples[cutoff_index:])
+                elif len(samples) >=5000 and len(samples) <10000:
+                    cutoff_index = max(1, int(len(samples) * 0.8))
+                    last__samples.extend(samples[cutoff_index:])
+                elif len(samples) >=1000 and len(samples) <5000:
+                    cutoff_index = max(1, int(len(samples) * 0.8))
+                    last__samples.extend(samples[cutoff_index:])
+                elif len(samples) >=500 and len(samples) <1000:
+                    cutoff_index = max(1, int(len(samples) * 0.7))
+                    last__samples.extend(samples[cutoff_index:])
+                else:
+                    cutoff_index = max(1, int(len(samples) * 0.5))
+                    last__samples.extend(samples[cutoff_index:])
+            # if process_sample:
+            #     s_samples = [sample for sample in samples if sample['relative_image'] not in s_blacklist]
+            #     s_samples.sort(key=lambda x: x['relative_image'])  # Sort to ensure consistent order
+            #     cutoff_index = max(1, int(len(s_samples) * 0.5))
+            #     last__samples.extend(s_samples[cutoff_index:])
+            # else:
+            #     cutoff_index = max(1, int(len(samples) * 0.5))
+            #     last__samples.extend(samples[cutoff_index:])
             for last_samples in last__samples:
                 blacklist.add(last_samples['relative_image'])
             last_samples1 = [dict(s) for s in set(frozenset(d.items()) for d in last__samples)]
@@ -408,7 +407,7 @@ if __name__ == "__main__":
     blacklist_file = "/home/DATA2/cxh/Train_dataset/train_data/train.json"
     output_test_file = os.path.join(root_directory, "test_stage6.jsson")
     n=1
-    output_val_file = os.path.join(root_directory, "train_p3.json")
+    output_val_file = os.path.join(root_directory, "train_quilt_v2.json")
     test_size = 0.2  
     process_all_samples_in_directory(root_directory, blacklist_file, output_test_file,output_val_file,n,test_size)
 

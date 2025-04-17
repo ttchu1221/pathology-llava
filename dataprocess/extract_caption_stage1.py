@@ -23,7 +23,7 @@ def extract_samples_from_json(file_path, directory):
                 caption = data.get('caption')
                 image = data.get('image')
                 
-                if caption and image:
+                if caption and image :
                     relative_image_path = os.path.relpath(os.path.join(os.path.dirname(file_path), "images", image), start=directory)
                     abs_path = os.path.join(directory, relative_image_path)
                     if os.path.exists(abs_path):
@@ -177,32 +177,39 @@ def process_all_samples_in_directory(root_directory, output_train_file, output_t
             json.dump([], f, indent=4, ensure_ascii=False)
         return
     print("^_^")
-
-    grouped_samples = {}
-    for sample in all_combined_samples:
-        caption = sample["conversations"][0]["value"].split(":")[-1].strip()
-        if caption not in grouped_samples:
-            grouped_samples[caption] = []
-        grouped_samples[caption].append(sample)
-    # from pdb import set_trace
-    # 
-    train_samples = []
-    test_samples = []
-    for caption, samples in grouped_samples.items():
-        train, test = train_test_split(samples, test_size=test_size, random_state=random_state, stratify=[s["metadata"]["dataset"] for s in samples])
-        train_samples.extend(train)
-        test_samples.extend(test)
     with open(output_train_file, 'w', encoding='utf-8') as f:
-        json.dump(train_samples, f, indent=4, ensure_ascii=False)
-    with open(output_test_file, 'w', encoding='utf-8') as f:
-        json.dump(test_samples, f, indent=4, ensure_ascii=False)
-    print(f"Training set saved to {output_train_file}.")
-    print(f"Testing set saved to {output_test_file}.")
+        json.dump(all_combined_samples, f, indent=4, ensure_ascii=False)
+    grouped_samples = {}
+    # for sample in all_combined_samples:
+    #     caption = sample["conversations"][0]["value"].split(":")[-1].strip()
+    #     if caption not in grouped_samples:
+    #         grouped_samples[caption] = []
+    #     grouped_samples[caption].append(sample)
+    # # with open(output_train_file, 'w', encoding='utf-8') as f:
+    # #     json.dump(grouped_samples, f, indent=4, ensure_ascii=False)
+    # # from pdb import set_trace
+    # # 
+    # train_samples = []
+    # test_samples = []
+    # val_samples = []
+    # for caption, samples in grouped_samples.items():
+    #     train, test = train_test_split(samples, test_size=test_size, random_state=random_state, stratify=[s["metadata"]["dataset"] for s in samples])
+    #     # train_samples.extend(train)
+    #     # test_samples.extend(test)
+    #     val_samples.extend(train)
+    #     val_samples.extend(test)
+ 
+    # with open(output_train_file, 'w', encoding='utf-8') as f:
+    #     json.dump(train_samples, f, indent=4, ensure_ascii=False)
+    # with open(output_test_file, 'w', encoding='utf-8') as f:
+    #     json.dump(test_samples, f, indent=4, ensure_ascii=False)
+    # print(f"Training set saved to {output_train_file}.")
+    # print(f"Testing set saved to {output_test_file}.")
 # Example usage
 if __name__ == "__main__":
-    root_directory = "/home/DATA2/cxh/Train_dataset/train_data"
+    root_directory = "/home/DATA2/cxh/open_dataset"
     # output_file = os.path.join(root_directory, "val_zero.json")
-    output_train_file = os.path.join(root_directory, "train.json")
+    output_train_file = os.path.join(root_directory, "train_quilt.json")
     output_test_file = os.path.join(root_directory, "test.json")
     # output_val_file = os.path.join(root_directory, "val_few_shot5.json")
     test_size = 0.2  
